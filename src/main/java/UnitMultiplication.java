@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
+import java.util.Objects;
 
 public class UnitMultiplication {
 
@@ -94,6 +95,8 @@ public class UnitMultiplication {
         job.setJarByClass(UnitMultiplication.class);
 
         //how chain two mapper classes?
+        ChainMapper.addMapper(job, TransitionMapper.class, Object.class, Text.class, Text.class, Text.class, conf);
+        ChainMapper.addMapper(job, PRMapper.class, Objects.class, Text.class, Text.class, Text.class, conf);
 
         job.setReducerClass(MultiplicationReducer.class);
 
