@@ -8,6 +8,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
@@ -19,6 +20,8 @@ public class UnitSum {
 
             //input format: toPage\t unitMultiplication
             //target: pass to reducer
+            String[] pageSubRank = value.toString().split("\t");
+            context.write(new Text(pageSubRank[0]), new DoubleWritable(Double.parseDouble(pageSubRank[1]));
         }
     }
 
@@ -28,8 +31,16 @@ public class UnitSum {
         public void reduce(Text key, Iterable<DoubleWritable> values, Context context)
                 throws IOException, InterruptedException {
 
-           //input key = toPage value = <unitMultiplication>
+            //input key = toPage value = <unitMultiplication>
             //target: sum!
+            double sum = 0;
+            for(DoubleWritable val: values) {
+                sum += val.get();
+            }
+
+            DecimalFormat df = new DecimalFormat("#.000000");
+            sum = Double.valueOf(df.format(sum));
+            context.write(key, new DoubleWritable(sum));
         }
     }
 

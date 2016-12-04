@@ -103,6 +103,7 @@ public class UnitMultiplication {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
+        //different input for two mappers
         MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, TransitionMapper.class);
         MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, PRMapper.class);
 
