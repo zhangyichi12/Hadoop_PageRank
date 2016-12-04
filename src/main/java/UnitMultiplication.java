@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 public class UnitMultiplication {
@@ -19,9 +20,23 @@ public class UnitMultiplication {
 
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-
+            //transition.txt
             //input format: fromPage\t toPage1,toPage2,toPage3
             //target: build transition matrix unit -> fromPage\t toPage=probability
+
+            String line = value.toString().trim();
+            String[] fromTo = line.split("\t");
+
+            //Dead Ends - 1
+            if(fromTo.length == 1 || fromTo[1].trim().equals("")) {
+                return ;
+            }
+
+            String from = fromTo[0];
+            String[] to = fromTo[1].split(",");
+            for(String t: to) {
+                context.write(new Text(from), new Text(t + "=" + (double)1/to.length)); //
+            }
         }
     }
 
@@ -29,9 +44,12 @@ public class UnitMultiplication {
 
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-
+            //pr.txt
             //input format: Page\t PageRank
             //target: write to reducer
+
+            String[] pr = value.toString().split("\t");
+            context.write(new Text(pr[0]), new Text(pr[1]));
         }
     }
 
@@ -44,6 +62,28 @@ public class UnitMultiplication {
 
             //input key = fromPage value=<toPage=probability..., pageRank>
             //target: get the unit multiplication
+
+            //key = page value = <2=1/4, 7=1/4, 1/6000, ...>
+            //separate transition cell from pr cell
+            List<String> transitionUnit = new ArrayList<String>();
+            double prUnit = 0;
+
+            for(Text value: values) {
+                if(value.toString().contains("=")) {
+                    transitionUnit.add(value.toString());
+                }
+                else {
+                    prUnit = Double.parseDouble(value.toString());
+                }
+            }
+
+            //multiply
+            for(String unit: transitionUnit) {
+                String outputKey = unit.split("=")[0];
+                double relation = Double.parseDouble(unit.split("=")[1]);
+                String outputValue = String.valueOf(relation * prUnit);
+                context.write(new Text(outputKey), new Text(outputValue));
+            }
         }
     }
 
