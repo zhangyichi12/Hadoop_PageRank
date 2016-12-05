@@ -21,7 +21,7 @@ public class UnitSum {
             //input format: toPage\t unitMultiplication
             //target: pass to reducer
             String[] pageSubRank = value.toString().split("\t");
-            context.write(new Text(pageSubRank[0]), new DoubleWritable(Double.parseDouble(pageSubRank[1]));
+            context.write(new Text(pageSubRank[0]), new DoubleWritable(Double.parseDouble(pageSubRank[1])));
         }
     }
 

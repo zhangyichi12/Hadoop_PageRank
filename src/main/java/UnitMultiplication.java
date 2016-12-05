@@ -56,6 +56,12 @@ public class UnitMultiplication {
 
     public static class MultiplicationReducer extends Reducer<Text, Text, Text, Text> {
 
+        float beta;
+
+        @Override
+        public void setup(Context context) {
+
+        }
 
         @Override
         public void reduce(Text key, Iterable<Text> values, Context context)
@@ -96,7 +102,7 @@ public class UnitMultiplication {
 
         //how chain two mapper classes?
         ChainMapper.addMapper(job, TransitionMapper.class, Object.class, Text.class, Text.class, Text.class, conf);
-        ChainMapper.addMapper(job, PRMapper.class, Objects.class, Text.class, Text.class, Text.class, conf);
+        ChainMapper.addMapper(job, PRMapper.class, Object.class, Text.class, Text.class, Text.class, conf);
 
         job.setReducerClass(MultiplicationReducer.class);
 
